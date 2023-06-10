@@ -5,10 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ubilapaz.edu.bo.clasetaller.domain.Producto;
+import ubilapaz.edu.bo.clasetaller.dto.DescuentoDto;
 import ubilapaz.edu.bo.clasetaller.dto.ProductoDto;
 import ubilapaz.edu.bo.clasetaller.persistence.ProductoRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,9 +20,19 @@ public class ProductoController {
     private ProductoRepository productoRepository;
 
     @GetMapping("/list")
-    public ResponseEntity<List<Producto>> list(){
+    public ResponseEntity<List<DescuentoDto>> list(){
         List<Producto> productoList = productoRepository.findAll();
-        return new ResponseEntity<List<Producto>>(productoList, HttpStatus.OK);
+        List<DescuentoDto> descuentoDtoList = new ArrayList<>();
+        for(Producto product: productoList){
+            DescuentoDto d1 = new DescuentoDto();
+            d1.setNombre(product.getNombre());
+            d1.setCod(product.getCodigo());
+            d1.setPrecio(product.getPrecio());
+            Double des = product.getPrecio()*0.10;
+            d1.setDescuento(des);
+            descuentoDtoList.add(d1);
+        }
+        return new ResponseEntity<List<DescuentoDto>>(descuentoDtoList, HttpStatus.OK);
     }
 
     @PostMapping("/create")
